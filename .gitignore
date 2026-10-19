@@ -1,0 +1,11 @@
+# UiPath Studio local caches
+.local/
+.settings/
+.screenshots/
+.objects/
+.tmh/
+.nuget/
+
+# OS / editor
+.DS_Store
+Thumbs.db

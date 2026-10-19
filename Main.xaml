@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Activity mc:Ignorable="sap sap2010" x:Class="Main" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:s="clr-namespace:System;assembly=System.Private.CoreLib" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib" xmlns:sd="clr-namespace:System.Data;assembly=System.Data.Common" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members />
+  <VisualBasic.Settings>
+    <x:Null />
+  </VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>Main_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.IO</x:String>
+      <x:String>Microsoft.VisualBasic</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>UiPath.Core</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>System.Private.CoreLib</AssemblyReference>
+      <AssemblyReference>System.Collections</AssemblyReference>
+      <AssemblyReference>System.Data.Common</AssemblyReference>
+      <AssemblyReference>System.Linq</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="Main" sap2010:WorkflowViewState.IdRef="Sequence_main">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:String" Name="SitesCsvPath" />
+      <Variable x:TypeArguments="x:String" Name="SeenPath" />
+      <Variable x:TypeArguments="x:String" Name="ArchiveDir" />
+      <Variable x:TypeArguments="x:String" Name="DigestRecipient" />
+      <Variable x:TypeArguments="x:Int32" Name="LookbackDays" />
+      <Variable x:TypeArguments="x:Int32" Name="MaxItemsPerSite" />
+      <Variable x:TypeArguments="sd:DataTable" Name="dt_Items" />
+      <Variable x:TypeArguments="x:String" Name="FailedSites" />
+      <Variable x:TypeArguments="x:String" Name="HtmlBody" />
+      <Variable x:TypeArguments="x:String" Name="Subject" />
+    </Sequence.Variables>
+    <ui:LogMessage DisplayName="Log run start" Level="Info" Message="[&quot;[Site Digest] Run started&quot;]" sap2010:WorkflowViewState.IdRef="LogMessage_start" />
+    <ui:InvokeCode Code="Dim dataDir As String = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), &quot;DailySiteDigest&quot;)&#xA;System.IO.Directory.CreateDirectory(dataDir)&#xA;sitesPath = System.IO.Path.Combine(dataDir, &quot;Sites.csv&quot;)&#xA;If Not System.IO.File.Exists(sitesPath) Then System.IO.File.Copy(System.IO.Path.Combine(&quot;Data&quot;, &quot;Sites.csv&quot;), sitesPath)&#xA;seenPath = System.IO.Path.Combine(dataDir, &quot;Seen.txt&quot;)&#xA;archiveDir = System.IO.Path.Combine(dataDir, &quot;Output&quot;)" ContinueOnError="False" DisplayName="Prepare data folder" Language="VBNet" sap2010:WorkflowViewState.IdRef="InvokeCode_datadir">
+      <ui:InvokeCode.Arguments>
+        <OutArgument x:TypeArguments="x:String" x:Key="sitesPath">[SitesCsvPath]</OutArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="seenPath">[SeenPath]</OutArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="archiveDir">[ArchiveDir]</OutArgument>
+      </ui:InvokeCode.Arguments>
+    </ui:InvokeCode>
+    <ui:LogMessage DisplayName="Log data folder" Level="Info" Message="[&quot;[Site Digest] Sites list: &quot; &amp; SitesCsvPath]" sap2010:WorkflowViewState.IdRef="LogMessage_datadir" />
+    <ui:InvokeWorkflowFile DisplayName="LoadConfig" UnSafe="False" WorkflowFileName="LoadConfig.xaml" sap2010:WorkflowViewState.IdRef="Invoke_LoadConfig">
+      <ui:InvokeWorkflowFile.Arguments>
+        <OutArgument x:TypeArguments="x:String" x:Key="OUT_DigestRecipient">[DigestRecipient]</OutArgument>
+        <OutArgument x:TypeArguments="x:Int32" x:Key="OUT_LookbackDays">[LookbackDays]</OutArgument>
+        <OutArgument x:TypeArguments="x:Int32" x:Key="OUT_MaxItemsPerSite">[MaxItemsPerSite]</OutArgument>
+      </ui:InvokeWorkflowFile.Arguments>
+    </ui:InvokeWorkflowFile>
+    <ui:InvokeWorkflowFile DisplayName="FetchFeeds" UnSafe="False" WorkflowFileName="FetchFeeds.xaml" sap2010:WorkflowViewState.IdRef="Invoke_FetchFeeds">
+      <ui:InvokeWorkflowFile.Arguments>
+        <InArgument x:TypeArguments="x:String" x:Key="IN_SitesCsvPath">[SitesCsvPath]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="IN_SeenPath">[SeenPath]</InArgument>
+        <InArgument x:TypeArguments="x:Int32" x:Key="IN_LookbackDays">[LookbackDays]</InArgument>
+        <InArgument x:TypeArguments="x:Int32" x:Key="IN_MaxItemsPerSite">[MaxItemsPerSite]</InArgument>
+        <OutArgument x:TypeArguments="sd:DataTable" x:Key="OUT_dt_Items">[dt_Items]</OutArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="OUT_FailedSites">[FailedSites]</OutArgument>
+      </ui:InvokeWorkflowFile.Arguments>
+    </ui:InvokeWorkflowFile>
+    <ui:InvokeWorkflowFile DisplayName="BuildDigestHtml" UnSafe="False" WorkflowFileName="BuildDigestHtml.xaml" sap2010:WorkflowViewState.IdRef="Invoke_BuildDigestHtml">
+      <ui:InvokeWorkflowFile.Arguments>
+        <InArgument x:TypeArguments="sd:DataTable" x:Key="IN_dt_Items">[dt_Items]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="IN_FailedSites">[FailedSites]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="IN_ArchiveDir">[ArchiveDir]</InArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="OUT_HtmlBody">[HtmlBody]</OutArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="OUT_Subject">[Subject]</OutArgument>
+      </ui:InvokeWorkflowFile.Arguments>
+    </ui:InvokeWorkflowFile>
+    <ui:InvokeWorkflowFile DisplayName="SendDigest" UnSafe="False" WorkflowFileName="SendDigest.xaml" sap2010:WorkflowViewState.IdRef="Invoke_SendDigest">
+      <ui:InvokeWorkflowFile.Arguments>
+        <InArgument x:TypeArguments="x:String" x:Key="IN_To">[DigestRecipient]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="IN_Subject">[Subject]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="IN_HtmlBody">[HtmlBody]</InArgument>
+      </ui:InvokeWorkflowFile.Arguments>
+    </ui:InvokeWorkflowFile>
+    <ui:InvokeCode Code="Dim links As New List(Of String)&#xA;For Each r As System.Data.DataRow In items.Rows&#xA; links.Add(CStr(r(&quot;Link&quot;)))&#xA;Next&#xA;System.IO.File.AppendAllLines(seenPath, links)" ContinueOnError="False" DisplayName="Mark reported links as seen" Language="VBNet" sap2010:WorkflowViewState.IdRef="InvokeCode_seen">
+      <ui:InvokeCode.Arguments>
+        <InArgument x:TypeArguments="x:String" x:Key="seenPath">[SeenPath]</InArgument>
+        <InArgument x:TypeArguments="sd:DataTable" x:Key="items">[dt_Items]</InArgument>
+      </ui:InvokeCode.Arguments>
+    </ui:InvokeCode>
+    <ui:LogMessage DisplayName="Log run complete" Level="Info" Message="[&quot;[Site Digest] Run complete: &quot; &amp; Subject]" sap2010:WorkflowViewState.IdRef="LogMessage_complete" />
+  </Sequence>
+</Activity>

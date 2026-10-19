@@ -1,0 +1,4 @@
+SiteName,FeedUrl,Enabled
+BBC News,https://feeds.bbci.co.uk/news/rss.xml,TRUE
+The Verge,https://www.theverge.com/rss/index.xml,TRUE
+Google for Developers (YouTube),https://www.youtube.com/feeds/videos.xml?channel_id=UC_x5XG1OV2P6uZZ5FSM9Ttw,TRUE

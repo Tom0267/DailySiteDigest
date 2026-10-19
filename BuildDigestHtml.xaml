@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Activity mc:Ignorable="sap sap2010" x:Class="BuildDigestHtml" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:s="clr-namespace:System;assembly=System.Private.CoreLib" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib" xmlns:sd="clr-namespace:System.Data;assembly=System.Data.Common" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="IN_dt_Items" Type="InArgument(sd:DataTable)" />
+    <x:Property Name="IN_FailedSites" Type="InArgument(x:String)" />
+    <x:Property Name="IN_ArchiveDir" Type="InArgument(x:String)" />
+    <x:Property Name="OUT_HtmlBody" Type="OutArgument(x:String)" />
+    <x:Property Name="OUT_Subject" Type="OutArgument(x:String)" />
+  </x:Members>
+  <VisualBasic.Settings>
+    <x:Null />
+  </VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>BuildDigestHtml_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Activities</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>Microsoft.VisualBasic</x:String>
+      <x:String>UiPath.Core</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualBasic.Core</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>System.Private.CoreLib</AssemblyReference>
+      <AssemblyReference>System.Collections</AssemblyReference>
+      <AssemblyReference>System.Data.Common</AssemblyReference>
+      <AssemblyReference>System.Linq</AssemblyReference>
+      <AssemblyReference>System.Net.Primitives</AssemblyReference>
+      <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="BuildDigestHtml" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <ui:InvokeCode Code="Dim enc As Func(Of String, String) = Function(t) System.Net.WebUtility.HtmlEncode(If(t, &quot;&quot;))&#xA;Dim font As String = &quot;font-family:'Segoe UI',Arial,sans-serif;&quot;&#xA;Dim today As DateTime = DateTime.Now&#xA;Dim rows As List(Of System.Data.DataRow) = items.Rows.Cast(Of System.Data.DataRow)().ToList()&#xA;subject = &quot;Daily site digest - &quot; &amp; today.ToString(&quot;d MMM yyyy&quot;) &amp; If(rows.Count = 0, &quot; (no new updates)&quot;, &quot; (&quot; &amp; rows.Count.ToString() &amp; &quot; new)&quot;)&#xA;Dim sb As New System.Text.StringBuilder()&#xA;sb.Append(&quot;&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;&lt;meta charset=&quot;&quot;utf-8&quot;&quot;&gt;&lt;title&gt;&quot; &amp; enc(subject) &amp; &quot;&lt;/title&gt;&lt;/head&gt;&quot;)&#xA;sb.Append(&quot;&lt;body style=&quot;&quot;margin:0;padding:0;background:#f3f4f6;&quot; &amp; font &amp; &quot;&quot;&quot;&gt;&quot;)&#xA;sb.Append(&quot;&lt;table role=&quot;&quot;presentation&quot;&quot; width=&quot;&quot;100%&quot;&quot; cellpadding=&quot;&quot;0&quot;&quot; cellspacing=&quot;&quot;0&quot;&quot; style=&quot;&quot;background:#f3f4f6;&quot;&quot;&gt;&lt;tr&gt;&lt;td align=&quot;&quot;center&quot;&quot; style=&quot;&quot;padding:24px 12px;&quot;&quot;&gt;&quot;)&#xA;sb.Append(&quot;&lt;table role=&quot;&quot;presentation&quot;&quot; width=&quot;&quot;600&quot;&quot; cellpadding=&quot;&quot;0&quot;&quot; cellspacing=&quot;&quot;0&quot;&quot; style=&quot;&quot;width:600px;max-width:600px;&quot;&quot;&gt;&quot;)&#xA;sb.Append(&quot;&lt;tr&gt;&lt;td style=&quot;&quot;padding:20px 24px;background:#1f2937;color:#ffffff;&quot; &amp; font &amp; &quot;&quot;&quot;&gt;&lt;div style=&quot;&quot;font-size:22px;font-weight:600;&quot;&quot;&gt;Daily site digest&lt;/div&gt;&quot;)&#xA;sb.Append(&quot;&lt;div style=&quot;&quot;font-size:14px;color:#d1d5db;padding-top:4px;&quot;&quot;&gt;&quot; &amp; enc(today.ToString(&quot;dddd d MMMM yyyy&quot;)) &amp; &quot; &amp;middot; &quot; &amp; rows.Count.ToString() &amp; &quot; new item(s)&lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;&quot;)&#xA;If rows.Count = 0 Then&#xA; sb.Append(&quot;&lt;tr&gt;&lt;td style=&quot;&quot;padding:24px;background:#ffffff;font-size:15px;color:#374151;&quot; &amp; font &amp; &quot;&quot;&quot;&gt;No new updates from your sites today.&lt;/td&gt;&lt;/tr&gt;&quot;)&#xA;End If&#xA;For Each siteGroup In rows.GroupBy(Function(r) CStr(r(&quot;Site&quot;)))&#xA; sb.Append(&quot;&lt;tr&gt;&lt;td style=&quot;&quot;padding:24px 0 8px 0;font-size:18px;font-weight:600;color:#111827;&quot; &amp; font &amp; &quot;&quot;&quot;&gt;&quot; &amp; enc(siteGroup.Key) &amp; &quot;&lt;/td&gt;&lt;/tr&gt;&quot;)&#xA; For Each r As System.Data.DataRow In siteGroup&#xA;  Dim link As String = enc(CStr(r(&quot;Link&quot;)))&#xA;  Dim image As String = CStr(r(&quot;ImageUrl&quot;))&#xA;  Dim isVideo As Boolean = CBool(r(&quot;IsVideo&quot;))&#xA;  sb.Append(&quot;&lt;tr&gt;&lt;td style=&quot;&quot;padding:0 0 16px 0;&quot;&quot;&gt;&lt;table role=&quot;&quot;presentation&quot;&quot; width=&quot;&quot;100%&quot;&quot; cellpadding=&quot;&quot;0&quot;&quot; cellspacing=&quot;&quot;0&quot;&quot; style=&quot;&quot;background:#ffffff;border:1px solid #e5e7eb;&quot;&quot;&gt;&quot;)&#xA;  If image &lt;&gt; &quot;&quot; Then&#xA;   sb.Append(&quot;&lt;tr&gt;&lt;td style=&quot;&quot;padding:0;&quot;&quot;&gt;&lt;a href=&quot;&quot;&quot; &amp; link &amp; &quot;&quot;&quot;&gt;&lt;img src=&quot;&quot;&quot; &amp; enc(image) &amp; &quot;&quot;&quot; width=&quot;&quot;598&quot;&quot; alt=&quot;&quot;&quot; &amp; enc(CStr(r(&quot;Title&quot;))) &amp; &quot;&quot;&quot; style=&quot;&quot;display:block;width:100%;max-width:598px;height:auto;border:0;&quot;&quot;&gt;&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&quot;)&#xA;  End If&#xA;  sb.Append(&quot;&lt;tr&gt;&lt;td style=&quot;&quot;padding:14px 18px;&quot; &amp; font &amp; &quot;&quot;&quot;&gt;&quot;)&#xA;  If isVideo Then sb.Append(&quot;&lt;div style=&quot;&quot;display:inline-block;padding:2px 8px;margin-bottom:6px;background:#dc2626;color:#ffffff;font-size:12px;font-weight:600;&quot;&quot;&gt;&amp;#9654; VIDEO&lt;/div&gt;&quot;)&#xA;  sb.Append(&quot;&lt;div style=&quot;&quot;font-size:16px;font-weight:600;line-height:1.35;&quot;&quot;&gt;&lt;a href=&quot;&quot;&quot; &amp; link &amp; &quot;&quot;&quot; style=&quot;&quot;color:#1d4ed8;text-decoration:none;&quot;&quot;&gt;&quot; &amp; enc(CStr(r(&quot;Title&quot;))) &amp; &quot;&lt;/a&gt;&lt;/div&gt;&quot;)&#xA;  sb.Append(&quot;&lt;div style=&quot;&quot;font-size:12px;color:#6b7280;padding-top:4px;&quot;&quot;&gt;&quot; &amp; enc(siteGroup.Key) &amp; &quot; &amp;middot; &quot; &amp; enc(CType(r(&quot;Published&quot;), DateTimeOffset).ToLocalTime().ToString(&quot;ddd d MMM HH:mm&quot;)) &amp; &quot;&lt;/div&gt;&quot;)&#xA;  If CStr(r(&quot;Snippet&quot;)) &lt;&gt; &quot;&quot; Then sb.Append(&quot;&lt;div style=&quot;&quot;font-size:14px;color:#374151;line-height:1.5;padding-top:8px;&quot;&quot;&gt;&quot; &amp; enc(CStr(r(&quot;Snippet&quot;))) &amp; &quot;&lt;/div&gt;&quot;)&#xA;  sb.Append(&quot;&lt;div style=&quot;&quot;padding-top:10px;font-size:14px;&quot;&quot;&gt;&lt;a href=&quot;&quot;&quot; &amp; link &amp; &quot;&quot;&quot; style=&quot;&quot;color:#1d4ed8;&quot;&quot;&gt;&quot; &amp; If(isVideo, &quot;Watch video &amp;rarr;&quot;, &quot;Read more &amp;rarr;&quot;) &amp; &quot;&lt;/a&gt;&lt;/div&gt;&quot;)&#xA;  sb.Append(&quot;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&quot;)&#xA; Next&#xA;Next&#xA;If Not String.IsNullOrWhiteSpace(failed) Then&#xA; sb.Append(&quot;&lt;tr&gt;&lt;td style=&quot;&quot;padding:16px 18px;background:#fef2f2;border:1px solid #fecaca;font-size:13px;color:#991b1b;&quot; &amp; font &amp; &quot;&quot;&quot;&gt;&lt;strong&gt;Sites that could not be read:&lt;/strong&gt;&lt;br&gt;&quot;)&#xA; sb.Append(String.Join(&quot;&lt;br&gt;&quot;, failed.Split({Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries).Select(Function(f) enc(f))))&#xA; sb.Append(&quot;&lt;/td&gt;&lt;/tr&gt;&quot;)&#xA;End If&#xA;sb.Append(&quot;&lt;tr&gt;&lt;td style=&quot;&quot;padding:16px 0;font-size:12px;color:#9ca3af;text-align:center;&quot; &amp; font &amp; &quot;&quot;&quot;&gt;Generated by the DailySiteDigest UiPath process.&lt;/td&gt;&lt;/tr&gt;&quot;)&#xA;sb.Append(&quot;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;&quot;)&#xA;html = sb.ToString()&#xA;System.IO.Directory.CreateDirectory(archiveDir)&#xA;System.IO.File.WriteAllText(System.IO.Path.Combine(archiveDir, &quot;Digest_&quot; &amp; today.ToString(&quot;yyyy-MM-dd&quot;) &amp; &quot;.html&quot;), html)" ContinueOnError="False" DisplayName="Build digest HTML and archive copy" Language="VBNet" sap2010:WorkflowViewState.IdRef="InvokeCode_build">
+      <ui:InvokeCode.Arguments>
+        <InArgument x:TypeArguments="sd:DataTable" x:Key="items">[IN_dt_Items]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="failed">[IN_FailedSites]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="archiveDir">[IN_ArchiveDir]</InArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="html">[OUT_HtmlBody]</OutArgument>
+        <OutArgument x:TypeArguments="x:String" x:Key="subject">[OUT_Subject]</OutArgument>
+      </ui:InvokeCode.Arguments>
+    </ui:InvokeCode>
+    <ui:LogMessage DisplayName="Log digest built" Level="Info" Message="[&quot;[Site Digest] Built &quot; &amp; OUT_Subject &amp; &quot;; archived under &quot; &amp; IN_ArchiveDir]" sap2010:WorkflowViewState.IdRef="LogMessage_built" />
+  </Sequence>
+</Activity>
