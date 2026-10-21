@@ -32,7 +32,7 @@
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
   <Sequence DisplayName="SendDigest" sap2010:WorkflowViewState.IdRef="Sequence_1">
-    <ui:SendOutlookMail Body="[IN_HtmlBody]" DisplayName="Send digest via Outlook desktop" IsBodyHtml="True" Subject="[IN_Subject]" To="[IN_To]" sap2010:WorkflowViewState.IdRef="SendOutlookMail_digest" />
+    <ui:SendOutlookMail Body="[IN_HtmlBody]" DisplayName="Send digest via Outlook desktop" IsBodyHtml="True" Subject="[IN_Subject]" To="[IN_To]" UseISConnection="False" sap2010:WorkflowViewState.IdRef="SendOutlookMail_digest" />
     <ui:LogMessage DisplayName="Log sent" Level="Info" Message="[&quot;[Site Digest] Sent '&quot; &amp; IN_Subject &amp; &quot;' to &quot; &amp; IN_To]" sap2010:WorkflowViewState.IdRef="LogMessage_sent" />
   </Sequence>
 </Activity>
